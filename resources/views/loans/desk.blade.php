@@ -8,6 +8,9 @@
         <a href="{{ route('desk.index', ['status' => 'active']) }}" class="px-3 py-1.5 rounded-md {{ $filter === 'active' ? 'bg-indigo-600 text-white font-semibold' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
           {{ __('Active Loans') }}
         </a>
+        <a href="{{ route('desk.index', ['status' => 'overdue']) }}" class="px-3 py-1.5 rounded-md {{ $filter === 'overdue' ? 'bg-red-600 text-white font-semibold' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
+          {{ __('Overdue Loans') }}
+        </a>
         <a href="{{ route('desk.index', ['status' => 'returned']) }}" class="px-3 py-1.5 rounded-md {{ $filter === 'returned' ? 'bg-indigo-600 text-white font-semibold' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
           {{ __('Returned Loans') }}
         </a>
@@ -39,6 +42,7 @@
                   <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Member</th>
                   <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Book</th>
                   <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Borrowed At</th>
+                  <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Due Date</th>
                   <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                   <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-right">Action</th>
                 </tr>
@@ -57,12 +61,19 @@
                       <div class="text-xs text-gray-500">By {{ $loan->book->author->name }}</div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {{ $loan->borrowed_at->format('M d, Y h:i A') }}
+                      {{ $loan->borrowed_at->format('M d, Y') }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                      {{ $loan->due_at ? $loan->due_at->format('M d, Y') : '—' }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
                       @if ($loan->returned_at)
                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                           Returned on {{ $loan->returned_at->format('M d, Y') }}
+                        </span>
+                      @elseif ($loan->isOverdue())
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800">
+                          Overdue ({{ $loan->daysOverdue() }}d)
                         </span>
                       @else
                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
@@ -98,4 +109,3 @@
     </div>
   </div>
 </x-app-layout>
-

@@ -47,6 +47,16 @@ class Book extends Model
         return $this->hasMany(Loan::class);
     }
 
+    public function reservations(): HasMany
+    {
+        return $this->hasMany(Reservation::class);
+    }
+
+    public function activeReservations(): HasMany
+    {
+        return $this->hasMany(Reservation::class)->where('status', 'pending')->orderBy('reserved_at');
+    }
+
     public function isAvailable(): bool
     {
         if ($this->is_reference) {

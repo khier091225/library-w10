@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\LoanController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReservationController;
 use Illuminate\Support\Facades\Route;
 
 // Home redirects to books catalog
@@ -24,6 +25,10 @@ Route::middleware('auth')->group(function () {
 
     // Borrow a book
     Route::post('/books/{book}/borrow', [BookController::class, 'borrow'])->name('books.borrow');
+
+    // Book Reservations / Holds
+    Route::post('/books/{book}/reserve', [ReservationController::class, 'store'])->name('books.reserve');
+    Route::delete('/reservations/{reservation}', [ReservationController::class, 'destroy'])->name('reservations.destroy');
 
     // Book management (create, store, edit, update, destroy)
     Route::resource('books', BookController::class)->except(['index', 'show']);

@@ -7,7 +7,7 @@
 
   <div class="py-8 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="bg-white shadow sm:rounded-lg p-6">
-      <form method="POST" action="{{ $book->exists ? route('books.update', $book) : route('books.store') }}">
+      <form method="POST" action="{{ $book->exists ? route('books.update', $book) : route('books.store') }}" enctype="multipart/form-data">
         @csrf
         @if ($book->exists)
           @method('PUT')
@@ -49,6 +49,19 @@
             <x-input-error class="mt-2" :messages="$errors->get('published_year')" />
           </div>
 
+          <!-- Book Cover Upload -->
+          <div>
+            <x-input-label for="cover" :value="__('Book Cover Image (Optional, max 2MB)')" />
+            @if ($book->cover_path)
+              <div class="mt-2 mb-3 flex items-center space-x-4">
+                <img src="{{ asset('storage/' . $book->cover_path) }}" alt="{{ $book->title }}" class="w-16 h-24 object-cover rounded border">
+                <span class="text-xs text-gray-500">{{ __('Current cover image') }}</span>
+              </div>
+            @endif
+            <input id="cover" name="cover" type="file" accept="image/png,image/jpeg,image/webp" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
+            <x-input-error class="mt-2" :messages="$errors->get('cover')" />
+          </div>
+
           <!-- Is Reference -->
           <div class="flex items-center">
             <input id="is_reference" name="is_reference" type="checkbox" value="1" @checked(old('is_reference', $book->is_reference)) class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500">
@@ -72,4 +85,3 @@
     </div>
   </div>
 </x-app-layout>
-

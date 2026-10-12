@@ -10,6 +10,7 @@ use App\Models\Member;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class BookController extends Controller
@@ -17,14 +18,40 @@ class BookController extends Controller
     /**
      * Display a listing of the books.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
-        $books = Book::with('author')
-            ->withCount(['loans as active_loans_count' => fn ($query) => $query->whereNull('returned_at')])
-            ->orderBy('title')
-            ->paginate(12);
+        $search = $request->query('q');
+        $status = $request->query('status');
+        $authorId = $request->query('author_id');
 
-        return view('books.index', compact('books'));
+        $query = Book::with('author')
+            ->withCount(['loans as active_loans_count' => fn ($q) => $q->whereNull('returned_at')]);
+
+        if (! empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                    ->orWhere('isbn', 'like', "%{$search}%")
+                    ->orWhereHas('author', fn ($sub) => $sub->where('name', 'like', "%{$search}%"));
+            });
+        }
+
+        if ($status === 'available') {
+            $query->where('is_reference', false)
+                ->whereDoesntHave('loans', fn ($q) => $q->whereNull('returned_at'));
+        } elseif ($status === 'borrowed') {
+            $query->whereHas('loans', fn ($q) => $q->whereNull('returned_at'));
+        } elseif ($status === 'reference') {
+            $query->where('is_reference', true);
+        }
+
+        if (! empty($authorId)) {
+            $query->where('author_id', $authorId);
+        }
+
+        $books = $query->orderBy('title')->paginate(12)->withQueryString();
+        $authors = Author::orderBy('name')->get();
+
+        return view('books.index', compact('books', 'authors', 'search', 'status', 'authorId'));
     }
 
     /**
@@ -47,7 +74,12 @@ class BookController extends Controller
     {
         Gate::authorize('create', Book::class);
 
-        $book = Book::create($request->validated());
+        $data = $request->validated();
+        if ($request->hasFile('cover')) {
+            $data['cover_path'] = $request->file('cover')->store('covers', 'public');
+        }
+
+        $book = Book::create($data);
 
         return redirect()->route('books.show', $book)
             ->with('status', 'Book added successfully.');
@@ -56,13 +88,22 @@ class BookController extends Controller
     /**
      * Display the specified book.
      */
-    public function show(Book $book): View
+    public function show(Request $request, Book $book): View
     {
-        $book->load('author');
+        $book->load(['author', 'activeReservations.member']);
 
         $hasActiveLoan = $book->loans()->whereNull('returned_at')->exists();
+        $user = $request->user();
+        $userReservation = ($user && $user->member)
+            ? $book->activeReservations->firstWhere('member_id', $user->member->id)
+            : null;
 
-        return view('books.show', compact('book', 'hasActiveLoan'));
+        $queuePosition = null;
+        if ($userReservation) {
+            $queuePosition = $book->activeReservations->search(fn ($r) => $r->id === $userReservation->id) + 1;
+        }
+
+        return view('books.show', compact('book', 'hasActiveLoan', 'userReservation', 'queuePosition'));
     }
 
     /**
@@ -84,7 +125,15 @@ class BookController extends Controller
     {
         Gate::authorize('update', $book);
 
-        $book->update($request->validated());
+        $data = $request->validated();
+        if ($request->hasFile('cover')) {
+            if ($book->cover_path && Storage::disk('public')->exists($book->cover_path)) {
+                Storage::disk('public')->delete($book->cover_path);
+            }
+            $data['cover_path'] = $request->file('cover')->store('covers', 'public');
+        }
+
+        $book->update($data);
 
         return redirect()->route('books.show', $book)
             ->with('status', 'Book updated successfully.');
@@ -122,6 +171,7 @@ class BookController extends Controller
             'book_id' => $book->id,
             'member_id' => $member->id,
             'borrowed_at' => now(),
+            'due_at' => now()->addDays(14),
             'returned_at' => null,
         ]);
 

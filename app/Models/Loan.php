@@ -18,6 +18,7 @@ class Loan extends Pivot
         'book_id',
         'member_id',
         'borrowed_at',
+        'due_at',
         'returned_at',
     ];
 
@@ -25,6 +26,7 @@ class Loan extends Pivot
     {
         return [
             'borrowed_at' => 'datetime',
+            'due_at' => 'datetime',
             'returned_at' => 'datetime',
         ];
     }
@@ -42,5 +44,15 @@ class Loan extends Pivot
     public function isReturned(): bool
     {
         return $this->returned_at !== null;
+    }
+
+    public function isOverdue(): bool
+    {
+        return ! $this->returned_at && $this->due_at && now()->gt($this->due_at);
+    }
+
+    public function daysOverdue(): int
+    {
+        return $this->isOverdue() ? (int) $this->due_at->diffInDays(now()) : 0;
     }
 }

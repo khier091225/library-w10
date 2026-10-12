@@ -28,6 +28,7 @@ class BookRequest extends FormRequest
             'title' => ['required', 'string', 'max:255'],
             'published_year' => ['required', 'integer', 'between:1000,'.(date('Y') + 1)],
             'is_reference' => ['nullable', 'boolean'],
+            'cover' => ['nullable', 'image', 'mimes:jpeg,png,webp,jpg', 'max:2048'],
         ];
     }
 

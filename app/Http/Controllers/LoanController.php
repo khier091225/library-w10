@@ -22,7 +22,11 @@ class LoanController extends Controller
             ? $member->loans()->with('book.author')->latest('borrowed_at')->paginate(10)
             : collect();
 
-        return view('loans.my', compact('loans'));
+        $reservations = $member
+            ? $member->activeReservations()->with('book.author')->latest('reserved_at')->get()
+            : collect();
+
+        return view('loans.my', compact('loans', 'reservations'));
     }
 
     /**
@@ -39,6 +43,8 @@ class LoanController extends Controller
 
         if ($filter === 'active') {
             $query->whereNull('returned_at');
+        } elseif ($filter === 'overdue') {
+            $query->whereNull('returned_at')->where('due_at', '<', now());
         } elseif ($filter === 'returned') {
             $query->whereNotNull('returned_at');
         }

@@ -6,6 +6,7 @@ use App\Models\Author;
 use App\Models\Book;
 use App\Models\Loan;
 use App\Models\Member;
+use App\Models\Reservation;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -75,10 +76,14 @@ class DatabaseSeeder extends Seeder
                     $availableBook = $borrowableBooks->first(fn ($b) => ! in_array($b->id, $currentlyLoanedBookIds, true));
                     if ($availableBook) {
                         $currentlyLoanedBookIds[] = $availableBook->id;
+                        $borrowedAt = fake()->dateTimeBetween('-25 days', 'now');
+                        $dueAt = (clone $borrowedAt)->modify('+14 days');
+
                         Loan::create([
                             'book_id' => $availableBook->id,
                             'member_id' => $member->id,
-                            'borrowed_at' => fake()->dateTimeBetween('-15 days', 'now'),
+                            'borrowed_at' => $borrowedAt,
+                            'due_at' => $dueAt,
                             'returned_at' => null,
                         ]);
 
@@ -89,13 +94,29 @@ class DatabaseSeeder extends Seeder
                 // Otherwise, a returned loan
                 $book = $borrowableBooks->random();
                 $borrowedAt = fake()->dateTimeBetween('-60 days', '-10 days');
+                $dueAt = (clone $borrowedAt)->modify('+14 days');
                 $returnedAt = fake()->dateTimeBetween($borrowedAt, 'now');
 
                 Loan::create([
                     'book_id' => $book->id,
                     'member_id' => $member->id,
                     'borrowed_at' => $borrowedAt,
+                    'due_at' => $dueAt,
                     'returned_at' => $returnedAt,
+                ]);
+            }
+        }
+
+        // Seed sample pending holds/reservations on actively loaned books
+        $activeLoans = Loan::whereNull('returned_at')->get();
+        foreach ($activeLoans->take(6) as $loan) {
+            $otherMember = $allMembers->first(fn ($m) => $m->id !== $loan->member_id);
+            if ($otherMember) {
+                Reservation::create([
+                    'book_id' => $loan->book_id,
+                    'member_id' => $otherMember->id,
+                    'reserved_at' => now()->subDays(rand(1, 4)),
+                    'status' => 'pending',
                 ]);
             }
         }

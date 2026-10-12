@@ -92,8 +92,12 @@ class BookController extends Controller
     {
         $book->load(['author', 'activeReservations.member']);
 
-        $hasActiveLoan = $book->loans()->whereNull('returned_at')->exists();
+        $activeLoan = $book->loans()->whereNull('returned_at')->with('member')->latest('borrowed_at')->first();
+        $hasActiveLoan = $activeLoan !== null;
+
         $user = $request->user();
+        $isCurrentBorrower = ($user && $user->member && $activeLoan && $activeLoan->member_id === $user->member->id);
+
         $userReservation = ($user && $user->member)
             ? $book->activeReservations->firstWhere('member_id', $user->member->id)
             : null;
@@ -103,7 +107,7 @@ class BookController extends Controller
             $queuePosition = $book->activeReservations->search(fn ($r) => $r->id === $userReservation->id) + 1;
         }
 
-        return view('books.show', compact('book', 'hasActiveLoan', 'userReservation', 'queuePosition'));
+        return view('books.show', compact('book', 'hasActiveLoan', 'activeLoan', 'isCurrentBorrower', 'userReservation', 'queuePosition'));
     }
 
     /**

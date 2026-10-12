@@ -32,6 +32,16 @@ class ReservationPolicy
 
         $member = $user->member;
         if ($member) {
+            // Cannot place a hold if the member currently has this book borrowed
+            $isBorrower = $book->loans()
+                ->whereNull('returned_at')
+                ->where('member_id', $member->id)
+                ->exists();
+
+            if ($isBorrower) {
+                return false;
+            }
+
             $alreadyHolding = $book->activeReservations()
                 ->where('member_id', $member->id)
                 ->exists();

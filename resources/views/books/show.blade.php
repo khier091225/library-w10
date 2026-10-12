@@ -51,9 +51,15 @@
                   Reference Copy
                 </span>
               @elseif ($hasActiveLoan)
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800">
-                  Currently on Loan
-                </span>
+                @if ($isCurrentBorrower ?? false)
+                  <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">
+                    Borrowed by You
+                  </span>
+                @else
+                  <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800">
+                    Currently on Loan
+                  </span>
+                @endif
               @else
                 <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
                   Available to Borrow
@@ -93,58 +99,92 @@
               <strong>Notice:</strong> This is a reference book. Reference books cannot be checked out or reserved.
             </div>
           @elseif ($hasActiveLoan)
-            <div class="p-5 rounded-md bg-amber-50 border border-amber-200 text-sm space-y-4">
-              <div>
-                <h4 class="font-semibold text-amber-900 text-base">Book is Currently Checked Out</h4>
-                <p class="text-amber-800 mt-1">
-                  This copy has been borrowed by another member. 
-                  @if ($book->activeReservations->count() > 0)
-                    There are currently <strong>{{ $book->activeReservations->count() }}</strong> member(s) waiting in the reservation queue.
-                  @else
-                    There are no holds in line yet. You can be the first to reserve it!
-                  @endif
-                </p>
-              </div>
-
-              @auth
-                @if ($userReservation)
-                  <div class="bg-white p-4 rounded-md border border-amber-300 flex items-center justify-between">
-                    <div>
-                      <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-blue-100 text-blue-800 mr-2">
-                        Hold Placed
-                      </span>
-                      <span class="text-sm font-medium text-gray-900">
-                        You are <strong>#{{ $queuePosition }}</strong> in line. Reserved on {{ $userReservation->reserved_at->format('M d, Y') }}.
-                      </span>
-                    </div>
-
-                    <form method="POST" action="{{ route('reservations.destroy', $userReservation) }}" onsubmit="return confirm('Cancel your hold on this book?');">
-                      @csrf
-                      @method('DELETE')
-                      <button type="submit" class="inline-flex items-center px-3 py-1.5 border border-red-300 text-xs font-semibold rounded text-red-700 bg-white hover:bg-red-50 focus:outline-none">
-                        {{ __('Cancel Hold') }}
-                      </button>
-                    </form>
+            @if ($isCurrentBorrower ?? false)
+              <div class="p-5 rounded-md bg-blue-50 border border-blue-200 text-sm space-y-3">
+                <div>
+                  <div class="flex items-center gap-2">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-600 text-white">
+                      Borrowed by You
+                    </span>
+                    <h4 class="font-semibold text-blue-950 text-base">You Currently Have This Book</h4>
                   </div>
-                @else
-                  <div>
-                    <form method="POST" action="{{ route('books.reserve', $book) }}">
-                      @csrf
-                      <button type="submit" class="inline-flex items-center px-5 py-2.5 bg-indigo-600 border border-transparent rounded-md font-semibold text-sm text-white hover:bg-indigo-700 active:bg-indigo-900 transition shadow-sm">
-                        <svg class="w-5 h-5 mr-2 -ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                        {{ __('Place a Hold (Reserve)') }}
-                      </button>
-                    </form>
-                  </div>
-                @endif
-              @else
-                <div class="pt-2 text-sm text-amber-900">
-                  <a href="{{ route('login') }}" class="font-semibold underline hover:text-amber-950">Log in</a> to place a hold on this book.
+                  <p class="text-blue-900 mt-2">
+                    You borrowed this copy on <strong>{{ $activeLoan?->borrowed_at?->format('M d, Y') ?? 'Recently' }}</strong>.
+                    @if ($activeLoan && $activeLoan->due_at)
+                      @if ($activeLoan->isOverdue())
+                        <span class="text-red-700 font-semibold block mt-1">
+                          ⚠️ Overdue: Due date was {{ $activeLoan->due_at->format('M d, Y') }} ({{ $activeLoan->daysOverdue() }} day(s) overdue). Please return this copy to the circulation desk.
+                        </span>
+                      @else
+                        <span class="text-blue-950 block mt-1">
+                          📅 Due Date: <strong>{{ $activeLoan->due_at->format('M d, Y') }}</strong> ({{ (int) now()->diffInDays($activeLoan->due_at, false) }} day(s) remaining).
+                        </span>
+                      @endif
+                    @endif
+                  </p>
                 </div>
-              @endauth
-            </div>
+
+                <div class="pt-2 flex flex-wrap items-center gap-3">
+                  <a href="{{ route('loans.my') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 transition shadow-sm">
+                    View in My Loans &rarr;
+                  </a>
+                  <span class="text-xs text-blue-700">Please return this book at the circulation desk when finished.</span>
+                </div>
+              </div>
+            @else
+              <div class="p-5 rounded-md bg-amber-50 border border-amber-200 text-sm space-y-4">
+                <div>
+                  <h4 class="font-semibold text-amber-900 text-base">Book is Currently Checked Out</h4>
+                  <p class="text-amber-800 mt-1">
+                    This copy has been borrowed by another member. 
+                    @if ($book->activeReservations->count() > 0)
+                      There are currently <strong>{{ $book->activeReservations->count() }}</strong> member(s) waiting in the reservation queue.
+                    @else
+                      There are no holds in line yet. You can be the first to reserve it!
+                    @endif
+                  </p>
+                </div>
+
+                @auth
+                  @if ($userReservation)
+                    <div class="bg-white p-4 rounded-md border border-amber-300 flex items-center justify-between">
+                      <div>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-blue-100 text-blue-800 mr-2">
+                          Hold Placed
+                        </span>
+                        <span class="text-sm font-medium text-gray-900">
+                          You are <strong>#{{ $queuePosition }}</strong> in line. Reserved on {{ $userReservation->reserved_at->format('M d, Y') }}.
+                        </span>
+                      </div>
+
+                      <form method="POST" action="{{ route('reservations.destroy', $userReservation) }}" onsubmit="return confirm('Cancel your hold on this book?');">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="inline-flex items-center px-3 py-1.5 border border-red-300 text-xs font-semibold rounded text-red-700 bg-white hover:bg-red-50 focus:outline-none">
+                          {{ __('Cancel Hold') }}
+                        </button>
+                      </form>
+                    </div>
+                  @else
+                    <div>
+                      <form method="POST" action="{{ route('books.reserve', $book) }}">
+                        @csrf
+                        <button type="submit" class="inline-flex items-center px-5 py-2.5 bg-indigo-600 border border-transparent rounded-md font-semibold text-sm text-white hover:bg-indigo-700 active:bg-indigo-900 transition shadow-sm">
+                          <svg class="w-5 h-5 mr-2 -ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                          </svg>
+                          {{ __('Place a Hold (Reserve)') }}
+                        </button>
+                      </form>
+                    </div>
+                  @endif
+                @else
+                  <div class="pt-2 text-sm text-amber-900">
+                    <a href="{{ route('login') }}" class="font-semibold underline hover:text-amber-950">Log in</a> to place a hold on this book.
+                  </div>
+                @endauth
+              </div>
+            @endif
           @else
             @auth
               <form method="POST" action="{{ route('books.borrow', $book) }}" class="inline-block">

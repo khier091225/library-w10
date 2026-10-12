@@ -323,4 +323,55 @@ class LibraryEnhancementsTest extends TestCase
 
         $this->assertEquals('cancelled', $myHold->fresh()->status);
     }
+
+    public function test_borrower_cannot_place_hold_on_their_own_borrowed_book(): void
+    {
+        $book = Book::factory()->create(['is_reference' => false]);
+
+        // Current memberUser has borrowed this book
+        Loan::factory()->unreturned()->create([
+            'book_id' => $book->id,
+            'member_id' => $this->member->id,
+        ]);
+
+        // Attempting to reserve their own borrowed book must be forbidden
+        $response = $this->actingAs($this->memberUser)
+            ->post(route('books.reserve', $book));
+
+        $response->assertForbidden();
+    }
+
+    public function test_book_show_displays_borrowed_by_you_for_current_borrower(): void
+    {
+        $book = Book::factory()->create(['is_reference' => false]);
+
+        $loan = Loan::factory()->unreturned()->create([
+            'book_id' => $book->id,
+            'member_id' => $this->member->id,
+            'due_at' => now()->addDays(14),
+        ]);
+
+        // Viewing as current borrower
+        $response = $this->actingAs($this->memberUser)
+            ->get(route('books.show', $book));
+
+        $response->assertOk();
+        $response->assertSee('Borrowed by You');
+        $response->assertSee('You Currently Have This Book');
+        $response->assertSee('View in My Loans');
+        $response->assertDontSee('Place a Hold (Reserve)');
+        $response->assertDontSee('This copy has been borrowed by another member.');
+
+        // Viewing as another member
+        $otherUser = User::factory()->create(['role' => 'member']);
+        Member::factory()->create(['user_id' => $otherUser->id]);
+
+        $otherResponse = $this->actingAs($otherUser)
+            ->get(route('books.show', $book));
+
+        $otherResponse->assertOk();
+        $otherResponse->assertSee('Book is Currently Checked Out');
+        $otherResponse->assertSee('This copy has been borrowed by another member.');
+        $otherResponse->assertSee('Place a Hold (Reserve)');
+    }
 }

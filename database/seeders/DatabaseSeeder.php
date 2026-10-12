@@ -37,7 +37,19 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('password'),
         ]);
 
-        // Link the member user to a members row
+        // Link users to members rows
+        $adminMember = Member::create([
+            'user_id' => $admin->id,
+            'name' => $admin->name,
+            'email' => $admin->email,
+        ]);
+
+        $librarianMember = Member::create([
+            'user_id' => $librarian->id,
+            'name' => $librarian->name,
+            'email' => $librarian->email,
+        ]);
+
         $primaryMember = Member::create([
             'user_id' => $memberUser->id,
             'name' => $memberUser->name,
@@ -57,8 +69,8 @@ class DatabaseSeeder extends Seeder
         }
 
         // 3. Seed remaining members to reach 30 total members
-        $otherMembers = Member::factory(29)->create();
-        $allMembers = collect([$primaryMember])->merge($otherMembers);
+        $otherMembers = Member::factory(27)->create();
+        $allMembers = collect([$primaryMember, $adminMember, $librarianMember])->merge($otherMembers);
 
         // Filter non-reference books for loans
         $borrowableBooks = $books->where('is_reference', false)->values();

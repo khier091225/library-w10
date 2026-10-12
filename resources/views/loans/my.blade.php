@@ -82,7 +82,7 @@
         @if ($loans->isEmpty())
           <div class="text-center py-8 text-gray-500">
             <p>{{ __('You have not borrowed any books yet.') }}</p>
-            <a href="{{ route('books.index') }}" class="mt-4 inline-block text-indigo-600 hover:text-indigo-900 font-semibold text-sm">
+            <a href="{{ route('books.index', ['status' => 'available']) }}" class="mt-4 inline-block text-indigo-600 hover:text-indigo-900 font-semibold text-sm">
               {{ __('Browse available books in the catalog &rarr;') }}
             </a>
           </div>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Loan;
+use App\Models\Member;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -16,15 +17,13 @@ class LoanController extends Controller
     public function myLoans(Request $request): View
     {
         $user = $request->user();
-        $member = $user->member;
+        $member = $user->member ?? Member::firstOrCreate(
+            ['user_id' => $user->id],
+            ['name' => $user->name, 'email' => $user->email]
+        );
 
-        $loans = $member
-            ? $member->loans()->with('book.author')->latest('borrowed_at')->paginate(10)
-            : collect();
-
-        $reservations = $member
-            ? $member->activeReservations()->with('book.author')->latest('reserved_at')->get()
-            : collect();
+        $loans = $member->loans()->with('book.author')->latest('borrowed_at')->paginate(10);
+        $reservations = $member->activeReservations()->with('book.author')->latest('reserved_at')->get();
 
         return view('loans.my', compact('loans', 'reservations'));
     }

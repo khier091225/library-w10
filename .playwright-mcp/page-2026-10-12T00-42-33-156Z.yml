@@ -1,0 +1,218 @@
+- generic [ref=e2]:
+  - navigation [ref=e3]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - link [ref=e8] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/books
+        - link "Books" [ref=e12] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/books
+      - generic [ref=e14]:
+        - link "Log in" [ref=e15] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/login
+        - link "Register" [ref=e16] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/register
+  - banner [ref=e17]:
+    - heading "Library Books Catalog" [level=2] [ref=e20]
+  - main [ref=e21]:
+    - generic [ref=e22]:
+      - generic [ref=e24]:
+        - generic [ref=e25]:
+          - generic [ref=e26]: Search
+          - textbox "Search" [ref=e27]:
+            - /placeholder: Title, author, or ISBN...
+        - generic [ref=e28]:
+          - generic [ref=e29]: Availability
+          - combobox "Availability" [ref=e30]:
+            - option "All Statuses" [selected]
+            - option "Available to Borrow"
+            - option "Currently on Loan"
+            - option "Reference (Library only)"
+        - generic [ref=e31]:
+          - generic [ref=e32]: Author
+          - combobox "Author" [ref=e33]:
+            - option "All Authors" [selected]
+            - option "Andres Koss"
+            - option "Cheyenne Luettgen"
+            - option "Eleazar McLaughlin"
+            - option "Jodie Smith"
+            - option "Kara Leuschke"
+            - option "Mr. Casimer Klein DDS"
+            - option "Mrs. Enola Wisoky Jr."
+            - option "Ms. Margie Armstrong MD"
+            - option "Prof. Demarcus Rau I"
+            - option "Prof. Jana Wuckert PhD"
+        - button "Filter" [ref=e35] [cursor=pointer]
+      - generic [ref=e36]:
+        - generic [ref=e37]:
+          - generic [ref=e38]:
+            - generic [ref=e43]:
+              - heading [level=3] [ref=e45]:
+                - link "A Vel Consequatur Fugiat" [ref=e46] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/books/22
+              - paragraph [ref=e47]: By Cheyenne Luettgen
+              - generic [ref=e48]: Available
+            - generic [ref=e50]:
+              - generic [ref=e51]: "ISBN: 9781573542637"
+              - generic [ref=e52]: "Published: 1983"
+          - link "View Details →" [ref=e54] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/books/22
+        - generic [ref=e55]:
+          - generic [ref=e56]:
+            - generic [ref=e61]:
+              - heading [level=3] [ref=e63]:
+                - link "Aut Nisi Est" [ref=e64] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/books/2
+              - paragraph [ref=e65]: By Eleazar McLaughlin
+              - generic [ref=e66]: On Loan
+            - generic [ref=e68]:
+              - generic [ref=e69]: "ISBN: 9782677983504"
+              - generic [ref=e70]: "Published: 1998"
+          - link "View Details →" [ref=e72] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/books/2
+        - generic [ref=e73]:
+          - generic [ref=e74]:
+            - generic [ref=e79]:
+              - heading [level=3] [ref=e81]:
+                - link "Blanditiis Autem Delectus" [ref=e82] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/books/4
+              - paragraph [ref=e83]: By Eleazar McLaughlin
+              - generic [ref=e84]: Reference
+            - generic [ref=e86]:
+              - generic [ref=e87]: "ISBN: 9783569097733"
+              - generic [ref=e88]: "Published: 1999"
+          - link "View Details →" [ref=e90] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/books/4
+        - generic [ref=e91]:
+          - generic [ref=e92]:
+            - generic [ref=e97]:
+              - heading [level=3] [ref=e99]:
+                - link "Dolores Sit Voluptas Consequatur" [ref=e100] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/books/7
+              - paragraph [ref=e101]: By Prof. Demarcus Rau I
+              - generic [ref=e102]: On Loan
+            - generic [ref=e104]:
+              - generic [ref=e105]: "ISBN: 9783905552371"
+              - generic [ref=e106]: "Published: 1974"
+          - link "View Details →" [ref=e108] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/books/7
+        - generic [ref=e109]:
+          - generic [ref=e110]:
+            - generic [ref=e115]:
+              - heading [level=3] [ref=e117]:
+                - link "Dolorum Commodi Accusamus Nostrum" [ref=e118] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/books/27
+              - paragraph [ref=e119]: By Mr. Casimer Klein DDS
+              - generic [ref=e120]: Available
+            - generic [ref=e122]:
+              - generic [ref=e123]: "ISBN: 9789114206435"
+              - generic [ref=e124]: "Published: 2006"
+          - link "View Details →" [ref=e126] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/books/27
+        - generic [ref=e127]:
+          - generic [ref=e128]:
+            - generic [ref=e133]:
+              - heading [level=3] [ref=e135]:
+                - link "Error Dolores Excepturi" [ref=e136] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/books/26
+              - paragraph [ref=e137]: By Mr. Casimer Klein DDS
+              - generic [ref=e138]: Available
+            - generic [ref=e140]:
+              - generic [ref=e141]: "ISBN: 9781520154660"
+              - generic [ref=e142]: "Published: 1985"
+          - link "View Details →" [ref=e144] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/books/26
+        - generic [ref=e145]:
+          - generic [ref=e146]:
+            - generic [ref=e151]:
+              - heading [level=3] [ref=e153]:
+                - link "Error Enim" [ref=e154] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/books/8
+              - paragraph [ref=e155]: By Prof. Demarcus Rau I
+              - generic [ref=e156]: Reference
+            - generic [ref=e158]:
+              - generic [ref=e159]: "ISBN: 9786147880382"
+              - generic [ref=e160]: "Published: 2012"
+          - link "View Details →" [ref=e162] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/books/8
+        - generic [ref=e163]:
+          - generic [ref=e164]:
+            - generic [ref=e169]:
+              - heading [level=3] [ref=e171]:
+                - link "Est Deserunt" [ref=e172] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/books/35
+              - paragraph [ref=e173]: By Prof. Jana Wuckert PhD
+              - generic [ref=e174]: Available
+            - generic [ref=e176]:
+              - generic [ref=e177]: "ISBN: 9780806281758"
+              - generic [ref=e178]: "Published: 2006"
+          - link "View Details →" [ref=e180] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/books/35
+        - generic [ref=e181]:
+          - generic [ref=e182]:
+            - generic [ref=e187]:
+              - heading [level=3] [ref=e189]:
+                - link "Est Eum Ex Distinctio Ut" [ref=e190] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/books/16
+              - paragraph [ref=e191]: By Kara Leuschke
+              - generic [ref=e192]: Reference
+            - generic [ref=e194]:
+              - generic [ref=e195]: "ISBN: 9783645130682"
+              - generic [ref=e196]: "Published: 1989"
+          - link "View Details →" [ref=e198] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/books/16
+        - generic [ref=e199]:
+          - generic [ref=e200]:
+            - generic [ref=e205]:
+              - heading [level=3] [ref=e207]:
+                - link "Et Quia Ullam Atque" [ref=e208] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/books/17
+              - paragraph [ref=e209]: By Andres Koss
+              - generic [ref=e210]: On Loan
+            - generic [ref=e212]:
+              - generic [ref=e213]: "ISBN: 9781096134015"
+              - generic [ref=e214]: "Published: 2020"
+          - link "View Details →" [ref=e216] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/books/17
+        - generic [ref=e217]:
+          - generic [ref=e218]:
+            - generic [ref=e223]:
+              - heading [level=3] [ref=e225]:
+                - link "Et Suscipit" [ref=e226] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/books/1
+              - paragraph [ref=e227]: By Eleazar McLaughlin
+              - generic [ref=e228]: On Loan
+            - generic [ref=e230]:
+              - generic [ref=e231]: "ISBN: 9785358902650"
+              - generic [ref=e232]: "Published: 2015"
+          - link "View Details →" [ref=e234] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/books/1
+        - generic [ref=e235]:
+          - generic [ref=e236]:
+            - generic [ref=e241]:
+              - heading [level=3] [ref=e243]:
+                - link "Eveniet Sint Animi Quod" [ref=e244] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/books/34
+              - paragraph [ref=e245]: By Prof. Jana Wuckert PhD
+              - generic [ref=e246]: Available
+            - generic [ref=e248]:
+              - generic [ref=e249]: "ISBN: 9781444058174"
+              - generic [ref=e250]: "Published: 1997"
+          - link "View Details →" [ref=e252] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/books/34
+      - navigation "Pagination Navigation" [ref=e254]:
+        - generic [ref=e255]:
+          - paragraph [ref=e257]: Showing 1 to 12 of 40 results
+          - generic [ref=e259]:
+            - generic "&laquo; Previous" [ref=e260]
+            - generic [ref=e264]: "1"
+            - link "Go to page 2" [ref=e266] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/books?page=2
+              - text: "2"
+            - link "Go to page 3" [ref=e267] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/books?page=3
+              - text: "3"
+            - link "Go to page 4" [ref=e268] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/books?page=4
+              - text: "4"
+            - link "Next &raquo;" [ref=e269] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/books?page=2
